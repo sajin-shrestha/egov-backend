@@ -25,7 +25,7 @@ export default [
         'error',
         { argsIgnorePattern: '^_' },
       ], // Allow unused function args if prefixed with _
-      '@typescript-eslint/explicit-function-return-type': 'warn', // Warn when return types are missing
+      // '@typescript-eslint/explicit-function-return-type': 'warn', // Warn when return types are missing
       '@typescript-eslint/no-explicit-any': 'warn', // Warn when `any` is used
       '@typescript-eslint/no-non-null-assertion': 'error', // Disallow non-null assertions (! operator)
 
