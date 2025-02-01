@@ -24,12 +24,10 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation for the E-Governance backend',
     },
+    servers: [{ url: 'https://egov-backend.vercel.app' }],
   },
-  // apis: ['./src/**/*.ts'],
-  apis:
-    process.env.NODE_ENV === 'production'
-      ? ['./dist/**/*.ts'] // For production (Vercel)
-      : ['./src/**/*.ts'], // For local development
+  // ✅ Ensure the correct path to scan all `.ts` files inside `src`
+  apis: [path.join(__dirname, './**/*.ts')],
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
