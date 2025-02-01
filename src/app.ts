@@ -28,7 +28,7 @@ const swaggerOptions = {
   },
   apis: [
     process.env.NODE_ENV === 'production'
-      ? path.join(__dirname, 'dist', '**', '*.js') // For Vercel (compiled JS)
+      ? path.join(__dirname, '**', '*.js') // For Vercel (compiled JS)
       : path.join(__dirname, '**', '*.ts'), // For Local Development (TS files)
   ],
 }
