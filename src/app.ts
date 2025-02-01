@@ -3,6 +3,7 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
+import path from 'path'
 
 const app = express()
 
@@ -20,13 +21,22 @@ const swaggerOptions = {
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
-// Serve Swagger docs at `/api-docs`
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+
+// Serve Swagger UI with static assets
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      url: '/api-docs/swagger.json', // Make sure the swagger.json is available
+    },
+  }),
+)
 
 app.use(express.json())
 
 // Routes
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   res.json({ message: 'Welcome to egovernance - backend' })
 })
 
@@ -35,4 +45,11 @@ app.use('/api/users', userRouter)
 // Global error-handler middleware
 app.use(globalErrorHandler)
 
+// Serve static files from swagger-ui-dist
+app.use(
+  '/swagger-ui',
+  express.static(path.join(require.resolve('swagger-ui-dist'), '../dist')),
+)
+
+// Export as Vercel serverless function
 export default app
