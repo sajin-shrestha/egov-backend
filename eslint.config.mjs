@@ -22,7 +22,7 @@ export default [
 
       // TypeScript Rules (if applicable)
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'next',
         { argsIgnorePattern: '^_' },
       ], // Allow unused function args if prefixed with _
       // '@typescript-eslint/explicit-function-return-type': 'warn', // Warn when return types are missing
