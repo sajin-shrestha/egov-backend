@@ -3,9 +3,17 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
+import path from 'path'
 
 const app = express()
 app.use(express.json())
+
+export const __swaggerDistPath = path.join(
+  __dirname,
+  '..',
+  'node_modules',
+  'swagger-ui-dist',
+)
 
 // Swagger configuration
 const swaggerOptions = {
@@ -21,7 +29,13 @@ const swaggerOptions = {
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+// app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+app.use(
+  '/docs',
+  express.static(__swaggerDistPath, { index: false }),
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec),
+)
 
 // Routes
 app.get('/', (req, res) => {
