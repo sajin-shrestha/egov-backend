@@ -26,8 +26,11 @@ const swaggerOptions = {
     },
     servers: [{ url: 'https://egov-backend.vercel.app' }],
   },
-  // ✅ Ensure the correct path to scan all `.ts` files inside `src`
-  apis: [path.join(__dirname, './**/*.ts')],
+  apis: [
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, 'dist', '**', '*.js') // For Vercel (compiled JS)
+      : path.join(__dirname, '**', '*.ts'), // For Local Development (TS files)
+  ],
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
