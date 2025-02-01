@@ -25,7 +25,7 @@ const swaggerOptions = {
       description: 'API documentation for the E-Governance backend',
     },
   },
-  apis: ['src/**/*.ts'],
+  apis: ['./src/**/*.ts'],
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
