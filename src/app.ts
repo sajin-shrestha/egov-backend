@@ -3,9 +3,12 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
+import path from 'path'
 
 const app = express()
 app.use(express.json())
+
+app.use('/api-docs', express.static(path.join(__dirname, 'dist')))
 
 // Swagger configuration
 const swaggerOptions = {
@@ -27,17 +30,9 @@ const swaggerOptions = {
 
 // Generate swagger spec
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
-const CSS_URL =
-  'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css'
 
 // Serve Swagger docs at `/api-docs`
-app.use(
-  '/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCssUrl: CSS_URL,
-  }),
-)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 // Routes
 app.get('/', (req, res) => {
