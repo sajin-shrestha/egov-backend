@@ -25,7 +25,11 @@ const swaggerOptions = {
       description: 'API documentation for the E-Governance backend',
     },
   },
-  apis: ['./src/**/*.ts'],
+  // apis: ['./src/**/*.ts'],
+  apis:
+    process.env.NODE_ENV === 'production'
+      ? ['./dist/**/*.ts'] // For production (Vercel)
+      : ['./src/**/*.ts'], // For local development
 }
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
