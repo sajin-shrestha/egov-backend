@@ -1,19 +1,19 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server.ts",
-      "use": "@vercel/node"
-    }
-  ],
+  "builds": [{ "src": "server.ts", "use": "@vercel/node" }],
   "routes": [
+    { "src": "/(.*)", "dest": "server.ts" },
     {
-      "src": "/api-docs",
-      "dest": "/api-docs"
+      "src": "/swagger-ui.css",
+      "dest": "/node_modules/swagger-ui-dist/swagger-ui.css"
     },
     {
-      "src": "/(.*)",
-      "dest": "server.ts"
+      "src": "/swagger-ui-bundle.js",
+      "dest": "/node_modules/swagger-ui-dist/swagger-ui-bundle.js"
+    },
+    {
+      "src": "/swagger-ui-standalone-preset.js",
+      "dest": "/node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js"
     }
   ]
 }

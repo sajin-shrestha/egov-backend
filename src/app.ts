@@ -28,7 +28,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
     swaggerOptions: {
-      url: '/api-docs/swagger.json', // Make sure the swagger.json is available
+      url: '/swagger.json', // Point to the correct URL of the Swagger JSON
     },
   }),
 )
