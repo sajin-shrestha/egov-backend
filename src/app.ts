@@ -16,8 +16,13 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation for the E-Governance backend',
     },
+    servers: [
+      {
+        url: 'https://egov-backend.vercel.app', // Vercel deployed URL
+      },
+    ],
   },
-  apis: ['./src/user/userRouter.ts'],
+  apis: ['./src/user/userRouter.ts'], // Adjust if your route files are in a different path
 }
 
 // Generate swagger spec
@@ -28,13 +33,17 @@ app.use(
   '/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'E-Governance API Docs',
     swaggerOptions: {
-      url: '/api-docs/swagger.json', // Ensure this points to the correct swagger spec
+      url: '/api-docs/swagger.json',
     },
   }),
 )
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'welcome to egovernance - backend' })
+})
 app.use('/api/users', userRouter)
 
 // Global error-handler middleware
