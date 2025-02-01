@@ -16,8 +16,13 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation for the E-Governance backend',
     },
+    servers: [
+      {
+        url: 'https://egov-backend.vercel.app',
+      },
+    ],
   },
-  apis: ['./src/user/userRouter.ts'], // Adjust if your route files are in a different path
+  apis: ['src/**/*.ts'],
 }
 
 // Generate swagger spec
@@ -30,8 +35,6 @@ app.use(
   '/docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
-    customCss:
-      '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
     customCssUrl: CSS_URL,
   }),
 )
