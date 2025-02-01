@@ -16,27 +16,23 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation for the E-Governance backend',
     },
-    servers: [
-      {
-        url: 'https://egov-backend.vercel.app', // Vercel deployed URL
-      },
-    ],
   },
   apis: ['./src/user/userRouter.ts'], // Adjust if your route files are in a different path
 }
 
 // Generate swagger spec
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
+const CSS_URL =
+  'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css'
 
 // Serve Swagger docs at `/api-docs`
 app.use(
-  '/api-docs',
+  '/docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
-    customSiteTitle: 'E-Governance API Docs',
-    swaggerOptions: {
-      url: '/api-docs/swagger.json',
-    },
+    customCss:
+      '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
+    customCssUrl: CSS_URL,
   }),
 )
 
