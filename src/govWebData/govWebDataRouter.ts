@@ -117,7 +117,7 @@ govWebDataRouter.get('/gov-web-data/:id', getGovWebDataById)
  *               - website_url
  *     responses:
  *       201:
- *         description: User successfully created
+ *         description: Government data successfully created
  *         content:
  *           application/json:
  *             schema:
