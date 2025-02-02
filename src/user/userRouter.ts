@@ -31,7 +31,7 @@ const userRouter = express.Router()
  *               - password
  *     responses:
  *       201:
- *         description: User successfully created
+ *         description: User successfully created and a JWT token is returned
  *         content:
  *           application/json:
  *             schema:
@@ -65,8 +65,8 @@ userRouter.post('/register', createUser)
  *               - email
  *               - password
  *     responses:
- *       200:
- *         description: User login successful and a token is returned
+ *       201:
+ *         description: User login successful and a JWT token is returned
  *         content:
  *           application/json:
  *             schema:
@@ -104,12 +104,6 @@ userRouter.post('/login', loginUser)
  *                       type: string
  *                       example: 'string'
  *                     role:
- *                        type: string
- *                        example: string
- *                     createdAt:
- *                        type: string
- *                        example: string
- * *                   updatedAt:
  *                        type: string
  *                        example: string
  *
