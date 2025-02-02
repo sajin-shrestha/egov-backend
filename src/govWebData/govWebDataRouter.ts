@@ -11,7 +11,7 @@ const govWebDataRouter = express.Router()
 
 /**
  * @swagger
- * /api/gov-web-data:
+ * /api/govt/gov-web-data:
  *   get:
  *     tags:
  *       - Government Data
@@ -46,7 +46,7 @@ govWebDataRouter.get('/gov-web-data', getAllGovWebData)
 
 /**
  * @swagger
- * /api/gov-web-data/{id}:
+ * /api/govt/gov-web-data/{id}:
  *   get:
  *     tags:
  *       - Government Data
@@ -83,7 +83,7 @@ govWebDataRouter.get('/gov-web-data/:id', getGovWebDataById)
 
 /**
  * @swagger
- * /api/gov-web-data:
+ * /api/govt/gov-web-data:
  *   post:
  *     tags:
  *       - Government Data
@@ -131,7 +131,7 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
 
 /**
  * @swagger
- * /api/gov-web-data:
+ * /api/govt/gov-web-data:
  *   patch:
  *     tags:
  *       - Government Data
