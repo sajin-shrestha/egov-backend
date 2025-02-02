@@ -10,18 +10,10 @@ const govWebDataSchema = new mongoose.Schema<IGovWebData>(
       type: String,
       required: true,
       unique: true,
-      match: [
-        /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/, // url regex
-        'Please provide a valid URL',
-      ],
     },
     image_url: {
       type: String,
       required: false,
-      match: [
-        /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/, // url regex
-        'Please provide a valid URL',
-      ],
     },
   },
   { timestamps: true },
