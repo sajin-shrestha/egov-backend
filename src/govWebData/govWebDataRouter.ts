@@ -22,22 +22,25 @@ const govWebDataRouter = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   name:
- *                     type: string
- *                   description:
- *                     type: string
- *                   address:
- *                     type: string
- *                   website_url:
- *                     type: string
- *                   image_url:
- *                     type: string
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       address:
+ *                         type: string
+ *                       website_url:
+ *                         type: string
+ *                       image_url:
+ *                         type: string
  */
 govWebDataRouter.get('/gov-web-data', getAllGovWebData)
 
@@ -140,24 +143,21 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *           schema:
  *             type: object
  *             properties:
- *               _id:
- *                 type: string
- *                 example: '507f1f77bcf86cd799439011'
  *               name:
  *                 type: string
- *                 example: 'Updated Government Web Data'
+ *                 example: 'string'
  *               description:
  *                 type: string
- *                 example: 'Updated description of the government web data.'
+ *                 example: 'string'
  *               address:
  *                 type: string
- *                 example: '456 Government Blvd.'
+ *                 example: 'string'
  *               website_url:
  *                 type: string
- *                 example: 'http://updatedgovwebsite.com'
+ *                 example: 'string_url'
  *               image_url:
  *                 type: string
- *                 example: 'http://updatedgovwebsite.com/image.jpg'
+ *                 example: 'string_url'
  *             required:
  *               - _id
  *               - name

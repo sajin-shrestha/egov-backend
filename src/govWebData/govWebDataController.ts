@@ -10,7 +10,7 @@ const getAllGovWebData = async (
 ) => {
   try {
     const data = await govWebDataModel.find()
-    res.status(200).json(data)
+    res.status(200).json({ data })
   } catch (error) {
     return next(createHttpError(500, 'Error while fetching government data'))
   }
@@ -79,15 +79,16 @@ const editGovWebData = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { id } = req.body
+  const { id } = req.params
   const { name, description, address, website_url, image_url } = req.body
 
-  if (!id || !name || !description || !address || !website_url) {
+  if (!name || !description || !address || !website_url) {
     return next(createHttpError(400, 'Some required fields are missing'))
   }
 
   try {
     const existingGovData = await govWebDataModel.findById(id)
+
     if (!existingGovData) {
       return next(createHttpError(404, 'Government data not found'))
     }
