@@ -31,7 +31,7 @@ const userRouter = express.Router()
  *               - password
  *     responses:
  *       201:
- *         description: User successfully created and a JWT token is returned
+ *         description: User successfully created
  *         content:
  *           application/json:
  *             schema:

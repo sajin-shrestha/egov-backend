@@ -4,11 +4,21 @@ import helmet from 'helmet'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import path from 'path'
+import morgan from 'morgan'
 
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
+import govWebDataRouter from './govWebData/govWebDataRouter'
+import logger from './config/logger'
 
 const app = express()
+
+app.use(
+  morgan('tiny', {
+    stream: { write: (message) => logger.info(message.trim()) },
+  }),
+)
+
 app.use(cors())
 app.use(helmet())
 app.use(express.json())
@@ -58,8 +68,15 @@ app.get('/', (req, res) => {
   res.json({ message: 'welcome to egovernance - backend' })
 })
 app.use('/api/users', userRouter)
+app.use('/api/govt/', govWebDataRouter)
 
 // Global error-handler middleware
 app.use(globalErrorHandler)
+
+// Log uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error(`Uncaught Exception: ${error.message}`)
+  process.exit(1)
+})
 
 export default app
