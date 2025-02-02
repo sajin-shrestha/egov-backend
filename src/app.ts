@@ -1,11 +1,16 @@
 import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
-import globalErrorHandler from './middlewares/globalErrorHandler'
-import userRouter from './user/userRouter'
 import path from 'path'
 
+import globalErrorHandler from './middlewares/globalErrorHandler'
+import userRouter from './user/userRouter'
+
 const app = express()
+app.use(cors())
+app.use(helmet())
 app.use(express.json())
 
 export const __swaggerDistPath = path.join(
