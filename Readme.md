@@ -45,4 +45,6 @@ npm i dotenv
 npm i -D @types/dotenv
 ```
 
-## Note: incomplete
+## Note: incomplete cmd
+
+## Swagger documentation available in `/docs`
