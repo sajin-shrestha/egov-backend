@@ -30,6 +30,15 @@ const swaggerOptions = {
       description: 'API documentation for the E-Governance backend',
     },
     servers: [{ url: 'https://egov-backend.vercel.app' }],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
   apis: [
     process.env.NODE_ENV === 'production'
