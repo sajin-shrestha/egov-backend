@@ -1,10 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import morgan from 'morgan'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import path from 'path'
+import morgan from 'morgan'
 
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
@@ -13,16 +13,22 @@ import logger from './config/logger'
 
 const app = express()
 
-// Middleware to log HTTP requests
 app.use(
   morgan('tiny', {
-    stream: { write: (message: string) => logger.info(message.trim()) },
+    stream: { write: (message) => logger.info(message.trim()) },
   }),
 )
 
 app.use(cors())
 app.use(helmet())
 app.use(express.json())
+
+export const __swaggerDistPath = path.join(
+  __dirname,
+  '..',
+  'node_modules',
+  'swagger-ui-dist',
+)
 
 // Swagger configuration
 const swaggerOptions = {
