@@ -82,10 +82,6 @@ const editGovWebData = async (
   const { id } = req.params
   const { name, description, address, website_url, image_url } = req.body
 
-  if (!name || !description || !address || !website_url) {
-    return next(createHttpError(400, 'Some required fields are missing'))
-  }
-
   try {
     const existingGovData = await govWebDataModel.findById(id)
 
@@ -93,11 +89,11 @@ const editGovWebData = async (
       return next(createHttpError(404, 'Government data not found'))
     }
 
-    existingGovData.name = name
-    existingGovData.description = description
-    existingGovData.address = address
-    existingGovData.website_url = website_url
-    existingGovData.image_url = image_url || ''
+    if (name) existingGovData.name = name
+    if (description) existingGovData.description = description
+    if (address) existingGovData.address = address
+    if (website_url) existingGovData.website_url = website_url
+    if (image_url !== undefined) existingGovData.image_url = image_url // to allow empty string for image_url
 
     await existingGovData.save()
 

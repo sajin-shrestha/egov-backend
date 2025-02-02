@@ -136,6 +136,13 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *     tags:
  *       - Government Data
  *     description: Edit existing government web data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the government web data
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -176,6 +183,6 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *                   type: string
  *                   example: 'Government data updated successfully'
  */
-govWebDataRouter.patch('/gov-web-data', auth, editGovWebData)
+govWebDataRouter.patch('/gov-web-data/:id', auth, editGovWebData)
 
 export default govWebDataRouter
