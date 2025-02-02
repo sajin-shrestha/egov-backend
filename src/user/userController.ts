@@ -74,7 +74,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 // get user profile
 const getProfile = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1] // bearer token
+  const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
     return next(createHttpError(401, 'Authentication token required'))
   }
@@ -83,7 +83,7 @@ const getProfile = async (req: Request, res: Response, next: NextFunction) => {
     const decoded = verifyToken(token)
 
     if (!decoded?.sub) {
-      return next(createHttpError(401, 'Invalid token'))
+      return next(createHttpError(401, 'Invalid token or token expired'))
     }
 
     const user = await userModel.findById(decoded.sub).select('-password')

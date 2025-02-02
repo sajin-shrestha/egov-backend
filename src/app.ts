@@ -7,6 +7,7 @@ import path from 'path'
 
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
+import govWebDataRouter from './govWebData/govWebDataRouter'
 
 const app = express()
 app.use(cors())
@@ -58,6 +59,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'welcome to egovernance - backend' })
 })
 app.use('/api/users', userRouter)
+app.use('/api/govt/', govWebDataRouter)
 
 // Global error-handler middleware
 app.use(globalErrorHandler)
