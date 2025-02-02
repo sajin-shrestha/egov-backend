@@ -1,5 +1,5 @@
 import express from 'express'
-import { createUser, loginUser } from './userController'
+import { createUser, getProfile, loginUser } from './userController'
 
 const userRouter = express.Router()
 
@@ -9,7 +9,6 @@ const userRouter = express.Router()
  *   post:
  *     tags:
  *       - Users
- *     summary: Create a new user
  *     requestBody:
  *       required: true
  *       content:
@@ -18,18 +17,28 @@ const userRouter = express.Router()
  *             type: object
  *             properties:
  *               username:
- *                  type: string
- *                  example: 'testuser'
+ *                 type: string
+ *                 example: 'string'
  *               email:
  *                 type: string
- *                 example: 'john.doe@example.com'
+ *                 example: 'string'
  *               password:
  *                 type: string
- *                 example: 'password@123!'
+ *                 example: 'string'
  *             required:
  *               - username
  *               - email
  *               - password
+ *     responses:
+ *       201:
+ *         description: User successfully created and a JWT token is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
 userRouter.post('/register', createUser)
 
@@ -39,7 +48,6 @@ userRouter.post('/register', createUser)
  *   post:
  *     tags:
  *       - Users
- *     summary: Login an existing user
  *     requestBody:
  *       required: true
  *       content:
@@ -56,7 +64,59 @@ userRouter.post('/register', createUser)
  *             required:
  *               - email
  *               - password
+ *     responses:
+ *       201:
+ *         description: User login successful and a JWT token is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
  */
 userRouter.post('/login', loginUser)
+
+/**
+ * @swagger
+ * /api/users/profile:
+ *   get:
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: User profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: string
+ *                     username:
+ *                       type: string
+ *                       example: 'string'
+ *                     email:
+ *                       type: string
+ *                       example: 'string'
+ *                     role:
+ *                        type: string
+ *                        example: string
+ *
+ *     security:
+ *       - bearerAuth: []
+ *
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+userRouter.get('/profile', getProfile)
 
 export default userRouter
