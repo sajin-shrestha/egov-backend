@@ -131,7 +131,7 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
 
 /**
  * @swagger
- * /api/govt/gov-web-data:
+ * /api/govt/gov-web-data/{id}:
  *   patch:
  *     tags:
  *       - Government Data
@@ -140,7 +140,7 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID of the government web data
+ *         description: The ID of the government data to update
  *         schema:
  *           type: string
  *     requestBody:
@@ -165,12 +165,7 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *               image_url:
  *                 type: string
  *                 example: 'string_url'
- *             required:
- *               - _id
- *               - name
- *               - description
- *               - address
- *               - website_url
+ *             additionalProperties: true  // Allows partial updates
  *     responses:
  *       200:
  *         description: Government data updated successfully
