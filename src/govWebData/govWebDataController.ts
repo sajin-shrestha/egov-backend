@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import govWebDataModel from './govWebDataModel'
 import createHttpError from 'http-errors'
+import { AuthenticatedRequest } from '../middlewares/auth'
 
 // Get all government web data
 const getAllGovWebData = async (
@@ -36,10 +37,15 @@ const getGovWebDataById = async (
 
 // Add new government web data
 const addGovWebData = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ) => {
+  if (!req.user) return next(createHttpError(500, 'Error authenticating user'))
+
+  if (req.user.role !== 'admin')
+    return next(createHttpError(401, 'Unauthorized'))
+
   const { name, description, address, website_url, image_url } = req.body
 
   if (!name || !description || !address || !website_url) {
