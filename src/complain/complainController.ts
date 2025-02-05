@@ -1,11 +1,14 @@
 import { NextFunction, Response } from 'express'
-import { AuthenticatedRequest } from '../middlewares/auth'
-import { Complain } from './complainModel'
 import createHttpError from 'http-errors'
 import { v2 as cloudinary } from 'cloudinary'
 
+import { AuthenticatedRequest } from '../middlewares/auth'
+import { Complain } from './complainModel'
+import { Status } from '../constants'
+import { isAdmin } from '../utils/helper'
+
 /**
- * File a new complaint
+ * File a new complain
  */
 export const fileComplain = async (
   req: AuthenticatedRequest,
@@ -34,7 +37,7 @@ export const fileComplain = async (
 }
 
 /**
- * Get complaints (Users see their own, Admins see all)
+ * Get complains (Users see their own, Admins see all)
  */
 export const getComplains = async (
   req: AuthenticatedRequest,
@@ -44,10 +47,9 @@ export const getComplains = async (
   if (!req.user) return next(createHttpError(401, 'Access denied'))
 
   try {
-    const complains =
-      req.user.role === 'admin'
-        ? await Complain.find()
-        : await Complain.find({ userId: req.user.id })
+    const complains = isAdmin(req.user.role)
+      ? await Complain.find()
+      : await Complain.find({ userId: req.user.id })
     res.status(200).json({ complains })
   } catch (error) {
     next(createHttpError(500, 'Internal server error'))
@@ -55,7 +57,7 @@ export const getComplains = async (
 }
 
 /**
- * Get complaints (Users see their own, Admins see all)
+ * Get complaints (User see their own, Admins can see any)
  */
 export const getComplainById = async (
   req: AuthenticatedRequest,
@@ -73,17 +75,17 @@ export const getComplainById = async (
       return next(createHttpError(404, 'Complain not found'))
     }
 
-    res.status(200).json(complain)
-  } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
-  }
+    // Allow access if the user is an admin OR the user owns the complaint
+    if (!isAdmin(req.user.role) && complain.userId.toString() !== req.user.id) {
+      return next(
+        createHttpError(
+          403,
+          'You do not have permission to view this complain',
+        ),
+      )
+    }
 
-  try {
-    const complains =
-      req.user.role === 'admin'
-        ? await Complain.find()
-        : await Complain.find({ userId: req.user.id })
-    res.json({ complains })
+    res.status(200).json(complain)
   } catch (error) {
     next(createHttpError(500, 'Internal server error'))
   }
@@ -115,7 +117,7 @@ export const updateComplain = async (
     if (description) complain.description = description
     if (category) complain.category = category
 
-    if (req.user.role === 'admin' && status) {
+    if (isAdmin(req.user.role) && status) {
       complain.status = status
     }
 
@@ -158,10 +160,7 @@ export const deleteComplain = async (
     if (!complain) return next(createHttpError(404, 'Complain not found'))
 
     // Users can delete their own, Admins can delete any
-    if (
-      req.user.role !== 'admin' &&
-      complain.userId.toString() !== req.user.id
-    ) {
+    if (!isAdmin(req.user.role) && complain.userId.toString() !== req.user.id) {
       return next(
         createHttpError(403, 'You can only delete your own complaints'),
       )
@@ -190,14 +189,14 @@ export const updateComplainStatus = async (
     const complain = await Complain.findById(id)
     if (!complain) return next(createHttpError(404, 'Complain not found'))
 
-    if (req.user.role !== 'admin') {
+    if (isAdmin(req.user.role)) {
       return next(
         createHttpError(403, 'You dont have permission to change status'),
       )
     }
 
-    if (complain.status === 'pending') {
-      complain.status = 'solved'
+    if (complain.status === Status.PENDING) {
+      complain.status = Status.SOLVED
       await complain.save()
       res.json({ message: 'Complain status updated to solved' })
     } else {

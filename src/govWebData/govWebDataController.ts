@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
-import govWebDataModel from './govWebDataModel'
 import createHttpError from 'http-errors'
+import govWebDataModel from './govWebDataModel'
 import { AuthenticatedRequest } from '../middlewares/auth'
 
 // Get all government web data
