@@ -30,14 +30,17 @@ const complainRouter = express.Router()
  *             properties:
  *               subject:
  *                 type: string
+ *                 example: 'string'
  *               description:
  *                 type: string
+ *                 example: 'string'
  *               category:
  *                 type: string
+ *                 example: 'string'
  *               image:
  *                 type: string
  *                 format: binary
- *                 description: Image file related to the complain
+ *                 example: 'image_file'
  *     responses:
  *       201:
  *         description: Successfully filed a complain
