@@ -1,12 +1,15 @@
 import nodemailer from 'nodemailer'
 import userModel from '../user/userModel'
+import { config } from '../config/config'
 
 // Email Configuration
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Or use SMTP settings for production
+  secure: true,
+  host: 'smtp.gmail.com',
+  port: 465,
   auth: {
-    user: process.env.EMAIL_USER, // Your email
-    pass: process.env.EMAIL_PASS, // Your email app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 })
 
@@ -29,12 +32,14 @@ export const sendEmail = async (
       return
     }
 
+    console.log(user.email)
+
     // Email options
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: config.hostEmail,
       to: user.email,
-      subject,
-      text: message,
+      subject: subject,
+      html: message,
     }
 
     // Send Email

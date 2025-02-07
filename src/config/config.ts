@@ -10,6 +10,8 @@ const _config = {
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+  hostEmail: process.env.EMAIL_USER,
+  hostEmailPassword: process.env.EMAIL_PASS,
 }
 
 export const config = Object.freeze(_config) // read-only property

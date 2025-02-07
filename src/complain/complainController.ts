@@ -204,15 +204,15 @@ export const updateComplainStatus = async (
       case Status.PENDING:
         complain.status = Status.IN_PROCESS
         updatedMessage = 'Complain status updated to in-process'
-        emailSubject = 'Your Complaint is Now Being Processed'
-        emailBody = `Dear User,\n\nYour complaint with ID: ${complain._id} is now being processed. We will update you once it is resolved.\n\nBest Regards,\nSupport Team`
+        emailSubject = 'Your Complain is Now Being Processed'
+        emailBody = `Dear User,\n\nYour complain with ID: ${complain._id} is now being processed. We will update you once it is resolved.\n\nBest Regards,\nNepal Government`
         break
 
       case Status.IN_PROCESS:
         complain.status = Status.RESOLVED
         updatedMessage = 'Complain status updated to resolved'
-        emailSubject = 'Your Complaint Has Been Resolved'
-        emailBody = `Dear User,\n\nYour complaint with ID: ${complain._id} has been successfully resolved.\n\nThank you for your patience.\nBest Regards,\nSupport Team`
+        emailSubject = 'Your Complain Has Been Resolved'
+        emailBody = `Dear User,\n\nYour complain with ID: ${complain._id} has been successfully resolved.\n\nThank you for your patience.\nBest Regards,\nNepal Government`
         break
 
       default:
