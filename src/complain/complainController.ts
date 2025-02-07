@@ -206,7 +206,7 @@ export const updateComplainStatus = async (
         updatedMessage = 'Complain status updated to in-process'
         emailSubject = 'तपाईंको गुनासो प्रक्रियामा रहेको जानकारी'
         emailBody = `
-          <p>श्रीमान/श्रीमती,</p>
+          <p>आदरणीय सेवाग्राही,</p>
           <p>यो सूचना तपाईंको गुनासो (ID: <strong>${complain._id}</strong> शीर्षक: <strong>${complain.subject}</strong>) हाल प्रक्रिया अन्तर्गत रहेको जानकारी गराउनका लागि पठाइएको हो।</p>
           <p>सम्बन्धित निकायले यसलाई यथाशीघ्र समाधान गर्न आवश्यक पहल गरिरहेको छ।</p>
           <p>गुनासो समाधान भए पश्चात् थप जानकारी उपलब्ध गराइनेछ।</p>
@@ -223,7 +223,7 @@ export const updateComplainStatus = async (
         updatedMessage = 'Complain status updated to resolved'
         emailSubject = 'तपाईंको गुनासो समाधान गरिएको जानकारी'
         emailBody = `
-          <p>श्रीमान/श्रीमती,</p>
+          <p>आदरणीय सेवाग्राही,</p>
           <p>तपाईंको गुनासो (ID: <strong>${complain._id}</strong> शीर्षक: <strong>${complain.subject}</strong>) सफलतापूर्वक समाधान गरिएको जानकारी गराउन चाहन्छौं।</p>
           <p>नेपाल सरकार तपाईंको सहकार्य र धैर्यका लागि आभार व्यक्त गर्दछ।</p>
           <p>यदि थप जानकारी वा सहायता आवश्यक परेमा, कृपया सम्बन्धित निकायमा सम्पर्क गर्नुहोस्।</p>
