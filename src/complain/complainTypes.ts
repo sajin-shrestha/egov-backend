@@ -6,5 +6,5 @@ export interface IComplain extends MongooseDocument {
   description: string
   image: string
   category: string
-  status: 'pending' | 'solved'
+  status: 'pending' | 'in-process' | 'resolved'
 }

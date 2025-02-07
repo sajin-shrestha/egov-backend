@@ -5,7 +5,8 @@ export const Roles = {
 
 export const Status = {
   PENDING: 'pending',
-  SOLVED: 'solved',
+  IN_PROCESS: 'in-process',
+  RESOLVED: 'resolved',
 } as const
 
 export const HttpStatusCodes = {

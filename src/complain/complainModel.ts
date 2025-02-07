@@ -7,7 +7,11 @@ const ComplainSchema: Schema = new Schema({
   description: { type: String, required: true },
   image: { type: String, required: false },
   category: { type: String, required: true },
-  status: { type: String, enum: ['pending', 'solved'], default: 'pending' },
+  status: {
+    type: String,
+    enum: ['pending', 'in-process', 'resolved'],
+    default: 'pending',
+  },
 })
 
 export const Complain = mongoose.model<IComplain>('Complain', ComplainSchema)

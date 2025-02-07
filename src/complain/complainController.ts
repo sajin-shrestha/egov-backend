@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from '../middlewares/auth'
 import { Complain } from './complainModel'
 import { Status } from '../constants'
 import { isAdmin } from '../utils/helper'
+import { sendEmail } from '../services/emailService'
 
 /**
  * File a new complain
@@ -191,17 +192,39 @@ export const updateComplainStatus = async (
 
     if (isAdmin(req.user.role)) {
       return next(
-        createHttpError(403, 'You dont have permission to change status'),
+        createHttpError(403, 'You don’t have permission to change status'),
       )
     }
 
-    if (complain.status === Status.PENDING) {
-      complain.status = Status.SOLVED
-      await complain.save()
-      res.json({ message: 'Complain status updated to solved' })
-    } else {
-      return next(createHttpError(400, 'Complain status is not pending'))
+    let updatedMessage = ''
+    let emailSubject = ''
+    let emailBody = ''
+
+    switch (complain.status) {
+      case Status.PENDING:
+        complain.status = Status.IN_PROCESS
+        updatedMessage = 'Complain status updated to in-process'
+        emailSubject = 'Your Complaint is Now Being Processed'
+        emailBody = `Dear User,\n\nYour complaint with ID: ${complain._id} is now being processed. We will update you once it is resolved.\n\nBest Regards,\nSupport Team`
+        break
+
+      case Status.IN_PROCESS:
+        complain.status = Status.RESOLVED
+        updatedMessage = 'Complain status updated to resolved'
+        emailSubject = 'Your Complaint Has Been Resolved'
+        emailBody = `Dear User,\n\nYour complaint with ID: ${complain._id} has been successfully resolved.\n\nThank you for your patience.\nBest Regards,\nSupport Team`
+        break
+
+      default:
+        return next(createHttpError(400, 'Cannot update complain status'))
     }
+
+    await complain.save()
+
+    // Send Email Notification
+    await sendEmail(complain.userId, emailSubject, emailBody)
+
+    res.json({ message: updatedMessage })
   } catch (error) {
     next(createHttpError(500, 'Internal server error'))
   }
