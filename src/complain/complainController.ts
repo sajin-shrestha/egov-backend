@@ -190,7 +190,7 @@ export const updateComplainStatus = async (
     const complain = await Complain.findById(id)
     if (!complain) return next(createHttpError(404, 'Complain not found'))
 
-    if (isAdmin(req.user.role)) {
+    if (!isAdmin(req.user.role)) {
       return next(
         createHttpError(403, 'You don’t have permission to change status'),
       )
