@@ -5,7 +5,7 @@ import {
   getAllGovWebData,
   getGovWebDataById,
 } from './govWebDataController'
-import auth from '../middlewares/auth'
+import authMiddleware from '../middlewares/auth'
 
 const govWebDataRouter = express.Router()
 
@@ -127,7 +127,7 @@ govWebDataRouter.get('/gov-web-data/:id', getGovWebDataById)
  *                   type: string
  *                   example: 'New government data added successfully'
  */
-govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
+govWebDataRouter.post('/gov-web-data', authMiddleware, addGovWebData)
 
 /**
  * @swagger
@@ -178,6 +178,6 @@ govWebDataRouter.post('/gov-web-data', auth, addGovWebData)
  *                   type: string
  *                   example: 'Government data updated successfully'
  */
-govWebDataRouter.patch('/gov-web-data/:id', auth, editGovWebData)
+govWebDataRouter.patch('/gov-web-data/:id', authMiddleware, editGovWebData)
 
 export default govWebDataRouter

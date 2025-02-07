@@ -3,8 +3,9 @@ import createHttpError from 'http-errors'
 import bcrypt from 'bcrypt'
 
 import userModel from './userModel'
-import { generateToken, verifyToken } from '../utils/token'
+import { generateToken } from '../utils/token'
 import { validateEmail, validatePassword } from '../utils/validation'
+import { AuthenticatedRequest } from '../middlewares/auth'
 
 // create new user
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -73,20 +74,17 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 // get user profile
-const getProfile = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    return next(createHttpError(401, 'Authentication token required'))
-  }
-
+const getProfile = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const decoded = verifyToken(token)
+    if (!req.user)
+      return next(createHttpError(500, 'Error authenticating user'))
 
-    if (!decoded?.sub) {
-      return next(createHttpError(401, 'Invalid token or token expired'))
-    }
-
-    const user = await userModel.findById(decoded.sub).select('-password')
+    // `req.user` will be set by `authMiddleware` after successful authentication
+    const user = await userModel.findById(req.user.id).select('-password')
 
     if (!user) {
       return next(createHttpError(404, 'User not found'))

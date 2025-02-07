@@ -1,24 +1,33 @@
 import { NextFunction, Request, Response } from 'express'
 import createHttpError from 'http-errors'
-import { JwtPayload } from 'jsonwebtoken'
 import { verifyToken } from '../utils/token'
-import { IUser } from '../user/userTypes'
+import userModel from '../user/userModel'
 
-interface AuthenticatedRequest extends Request {
-  user?: IUser
+export interface AuthenticatedRequest extends Request {
+  user?: { id: string; role: string }
 }
 
-const auth = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) return next(createHttpError(401, 'Access Denied'))
+const authMiddleware = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  const token = req.header('Authorization')
+  if (!token) return next(createHttpError(401, 'Access denied'))
 
   try {
-    const verifiedUser = verifyToken(token) as IUser & JwtPayload
-    req.user = verifiedUser
+    const tokenWithoutBearer = token.replace('Bearer ', '')
+    const decoded = verifyToken(tokenWithoutBearer) as { sub: string }
+
+    const user = await userModel.findById(decoded.sub)
+
+    if (!user) return next(createHttpError(401, 'User Not found'))
+
+    req.user = { id: user.id, role: user.role }
     next()
   } catch (error) {
-    return next(createHttpError(401, 'Invalid token or token expired'))
+    return next(createHttpError(401, 'Invalid token'))
   }
 }
 
-export default auth
+export default authMiddleware

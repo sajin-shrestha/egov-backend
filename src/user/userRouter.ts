@@ -1,5 +1,6 @@
 import express from 'express'
 import { createUser, getProfile, loginUser } from './userController'
+import authMiddleware from '../middlewares/auth'
 
 const userRouter = express.Router()
 
@@ -117,6 +118,6 @@ userRouter.post('/login', loginUser)
  *       scheme: bearer
  *       bearerFormat: JWT
  */
-userRouter.get('/profile', getProfile)
+userRouter.get('/profile', authMiddleware, getProfile)
 
 export default userRouter

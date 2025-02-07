@@ -10,6 +10,7 @@ import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
 import govWebDataRouter from './govWebData/govWebDataRouter'
 import logger from './config/logger'
+import complainRouter from './complain/complainRouter'
 
 const app = express()
 
@@ -67,6 +68,7 @@ app.use(
 app.get('/', (req, res) => {
   res.json({ message: 'welcome to egovernance - backend' })
 })
+app.use('/api/file/', complainRouter)
 app.use('/api/users', userRouter)
 app.use('/api/govt/', govWebDataRouter)
 
