@@ -204,15 +204,34 @@ export const updateComplainStatus = async (
       case Status.PENDING:
         complain.status = Status.IN_PROCESS
         updatedMessage = 'Complain status updated to in-process'
-        emailSubject = 'Your Complain is Now Being Processed'
-        emailBody = `Dear User,\n\nYour complain with ID: ${complain._id} is now being processed. We will update you once it is resolved.\n\nBest Regards,\nNepal Government`
+        emailSubject = 'तपाईंको गुनासो प्रक्रियामा रहेको जानकारी'
+        emailBody = `
+          <p>श्रीमान/श्रीमती,</p>
+          <p>यो सूचना तपाईंको गुनासो (ID: <strong>${complain._id}</strong> शीर्षक: <strong>${complain.subject}</strong>) हाल प्रक्रिया अन्तर्गत रहेको जानकारी गराउनका लागि पठाइएको हो।</p>
+          <p>सम्बन्धित निकायले यसलाई यथाशीघ्र समाधान गर्न आवश्यक पहल गरिरहेको छ।</p>
+          <p>गुनासो समाधान भए पश्चात् थप जानकारी उपलब्ध गराइनेछ।</p>
+          <br/>
+          <p>तपाईंको सहकार्यका लागि धन्यवाद।</p>
+          <p>सादर,</p>
+          <p><strong>नेपाल सरकार</strong></p>
+          `
+        await sendEmail(complain.userId, emailSubject, emailBody)
         break
 
       case Status.IN_PROCESS:
         complain.status = Status.RESOLVED
         updatedMessage = 'Complain status updated to resolved'
-        emailSubject = 'Your Complain Has Been Resolved'
-        emailBody = `Dear User,\n\nYour complain with ID: ${complain._id} has been successfully resolved.\n\nThank you for your patience.\nBest Regards,\nNepal Government`
+        emailSubject = 'तपाईंको गुनासो समाधान गरिएको जानकारी'
+        emailBody = `
+          <p>श्रीमान/श्रीमती,</p>
+          <p>तपाईंको गुनासो (ID: <strong>${complain._id}</strong> शीर्षक: <strong>${complain.subject}</strong>) सफलतापूर्वक समाधान गरिएको जानकारी गराउन चाहन्छौं।</p>
+          <p>नेपाल सरकार तपाईंको सहकार्य र धैर्यका लागि आभार व्यक्त गर्दछ।</p>
+          <p>यदि थप जानकारी वा सहायता आवश्यक परेमा, कृपया सम्बन्धित निकायमा सम्पर्क गर्नुहोस्।</p>
+          <br/>
+          <p>सादर,</p>
+          <p><strong>नेपाल सरकार</strong></p>
+          `
+        await sendEmail(complain.userId, emailSubject, emailBody)
         break
 
       default:
@@ -221,7 +240,7 @@ export const updateComplainStatus = async (
 
     await complain.save()
 
-    // Send Email Notification
+    // sending email
     await sendEmail(complain.userId, emailSubject, emailBody)
 
     res.json({ message: updatedMessage })
