@@ -16,37 +16,24 @@ function createStorage(folderName: string) {
     cloudinary,
     params: (req, file) => {
       const fileExtension = path.extname(file.originalname).substring(1)
-      const publicId = `${file.fieldname}-${Date.now()}` // Generate a unique public id
+      const publicId = `${file.fieldname}-${Date.now()}` // Generate a unique public ID
 
       return {
         folder: folderName, // Cloudinary folder
         public_id: publicId, // Custom public ID for Cloudinary
-        format: fileExtension, // File extension (e.g., jpg, png)
-        transformation: [
-          { width: 500, height: 500, crop: 'limit' }, // Image transformation (optional)
-        ],
+        format: fileExtension || undefined, // Use original format or let Cloudinary decide
       }
     },
   })
 }
 
-// File filter function to allow only certain formats
+// Allow all file types
 const fileFilter: multer.Options['fileFilter'] = (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback,
+    _req: Request,
+    _file: Express.Multer.File,
+    cb: multer.FileFilterCallback,
 ) => {
-  const allowedTypes = /jpeg|jpg|png|gif|webp|bmp|svg|tiff|heif|heic/i;
-  const isExtValid: boolean = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase(),
-  )
-  const isMimeValid: boolean = allowedTypes.test(file.mimetype)
-
-  if (isExtValid && isMimeValid) {
-    cb(null, true)
-  } else {
-    cb(new Error('Only .png, .jpg, and .jpeg formats are allowed!'))
-  }
+  cb(null, true) // accept all files
 }
 
 // Main upload middleware function with dynamic folder support
@@ -55,7 +42,7 @@ export function uploadMiddleware(folderName: string) {
 
   return multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+    limits: { fileSize: 15 * 1024 * 1024 }, // file limit to 15 MB
     fileFilter,
   })
 }
