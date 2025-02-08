@@ -31,7 +31,7 @@ export const fileComplain = async (
       category,
     })
     await complain.save()
-    res.status(201).json({ message: 'complain successfully submited' })
+    res.status(201).json({ message: 'complain successfully submitted' })
   } catch (error) {
     next(createHttpError(500, 'Internal server error'))
   }
@@ -49,8 +49,8 @@ export const getComplains = async (
 
   try {
     const complains = isAdmin(req.user.role)
-      ? await Complain.find()
-      : await Complain.find({ userId: req.user.id })
+      ? await Complain.find().select('-userId')
+      : await Complain.find({ userId: req.user.id }).select('-userId')
     res.status(200).json({ complains })
   } catch (error) {
     next(createHttpError(500, 'Internal server error'))
@@ -70,7 +70,7 @@ export const getComplainById = async (
   const { id } = req.params
 
   try {
-    const complain = await Complain.findById(id)
+    const complain = await Complain.findById(id).select('-userId')
 
     if (!complain) {
       return next(createHttpError(404, 'Complain not found'))
