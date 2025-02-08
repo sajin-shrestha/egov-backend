@@ -55,7 +55,7 @@ const complainRouter = express.Router()
 complainRouter.post(
   '/complain',
   authMiddleware,
-  uploadMiddleware('complains').single('file'),
+  uploadMiddleware('complains').single('image'),
   fileComplain,
 )
 
@@ -196,7 +196,7 @@ complainRouter.get('/complain/:id', authMiddleware, getComplainById)
 complainRouter.patch(
   '/complain/:id',
   authMiddleware,
-  uploadMiddleware('complains').single('file'),
+  uploadMiddleware('complains').single('image'),
   updateComplain,
 )
 
