@@ -36,7 +36,7 @@ const fileFilter: multer.Options['fileFilter'] = (
   file: Express.Multer.File,
   cb: multer.FileFilterCallback,
 ) => {
-  const allowedTypes = /jpeg|jpg|png/
+  const allowedTypes = /jpeg|jpg|png|gif|webp|bmp|svg|tiff|heif|heic/i;
   const isExtValid: boolean = allowedTypes.test(
     path.extname(file.originalname).toLowerCase(),
   )
@@ -55,7 +55,7 @@ export function uploadMiddleware(folderName: string) {
 
   return multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
     fileFilter,
   })
 }
