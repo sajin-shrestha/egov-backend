@@ -12,7 +12,14 @@ const getAllGovWebData = async (
   next: NextFunction,
 ) => {
   try {
-    const data = await govWebDataModel.find()
+    const filter = Object.fromEntries(
+      Object.entries(req.query).map(([key, value]) => [
+        key.toLowerCase(),
+        { $regex: String(value), $options: 'i' },
+      ]),
+    )
+
+    const data = await govWebDataModel.find(filter).sort({ createdAt: -1 }) // show latest data first
     res.status(HttpStatusCodes.OK).json({ data })
   } catch (error) {
     return next(

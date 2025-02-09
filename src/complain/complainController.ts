@@ -60,10 +60,19 @@ export const getComplains = async (
       createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
     )
 
+  const filter = Object.fromEntries(
+    Object.entries(req.query).map(([key, value]) => [
+      key.toLowerCase(),
+      { $regex: String(value), $options: 'i' },
+    ]),
+  )
+
   try {
     const complains = isAdmin(req.user.role)
-      ? await Complain.find().select('-userId')
-      : await Complain.find({ userId: req.user.id }).select('-userId')
+      ? await Complain.find(filter).select('-userId').sort({ createdAt: -1 }) // show latest data first
+      : await Complain.find({ userId: req.user.id })
+          .select('-userId')
+          .sort({ createdAt: -1 })
 
     res.status(HttpStatusCodes.OK).json({ complains })
   } catch (error) {
