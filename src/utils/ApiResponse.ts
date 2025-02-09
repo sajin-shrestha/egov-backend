@@ -1,18 +1,26 @@
 class ApiResponse<T> {
+  statusCode: number
   message: string
   data: T | null
 
-  constructor(message: string, data: T | null) {
+  constructor(statusCode: number, message: string, data: T | null) {
+    this.statusCode = statusCode
     this.message = message
     this.data = data
   }
 
-  static success<T>(data: T, message: string = 'Success'): ApiResponse<T> {
-    return new ApiResponse<T>(message, data)
+  // success response
+  static success<T>(
+    statusCode: number,
+    message: string,
+    data: T,
+  ): ApiResponse<T> {
+    return new ApiResponse<T>(statusCode, message, data)
   }
 
-  static error(message: string): ApiResponse<null> {
-    return new ApiResponse<null>(message, null)
+  // error response
+  static error(statusCode: number, message: string): ApiResponse<null> {
+    return new ApiResponse<null>(statusCode, message, null)
   }
 }
 
