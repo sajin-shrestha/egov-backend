@@ -4,7 +4,7 @@ import { v2 as cloudinary } from 'cloudinary'
 
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { Complain } from './complainModel'
-import { Status } from '../constants'
+import { HttpStatusCodes, Status } from '../constants'
 import { isAdmin } from '../utils/helper'
 import { sendEmail } from '../services/emailService'
 
@@ -16,7 +16,10 @@ export const fileComplain = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   const { subject, description, category } = req.body
   const image = req.file?.path ?? ''
@@ -31,9 +34,16 @@ export const fileComplain = async (
       category,
     })
     await complain.save()
-    res.status(201).json({ message: 'complain successfully submitted' })
+    res
+      .status(HttpStatusCodes.CREATED)
+      .json({ message: 'complain successfully submitted' })
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }
 
@@ -45,15 +55,24 @@ export const getComplains = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   try {
     const complains = isAdmin(req.user.role)
       ? await Complain.find().select('-userId')
       : await Complain.find({ userId: req.user.id }).select('-userId')
-    res.status(200).json({ complains })
+
+    res.status(HttpStatusCodes.OK).json({ complains })
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }
 
@@ -65,7 +84,10 @@ export const getComplainById = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   const { id } = req.params
 
@@ -73,22 +95,29 @@ export const getComplainById = async (
     const complain = await Complain.findById(id).select('-userId')
 
     if (!complain) {
-      return next(createHttpError(404, 'Complain not found'))
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Complain not found'),
+      )
     }
 
     // Allow access if the user is an admin OR the user owns the complaint
     if (!isAdmin(req.user.role) && complain.userId.toString() !== req.user.id) {
       return next(
         createHttpError(
-          403,
+          HttpStatusCodes.UNAUTHORIZED,
           'You do not have permission to view this complain',
         ),
       )
     }
 
-    res.status(200).json(complain)
+    res.status(HttpStatusCodes.OK).json(complain)
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }
 
@@ -100,7 +129,10 @@ export const updateComplain = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   const { id } = req.params
   const { subject, description, category, status } = req.body
@@ -108,10 +140,18 @@ export const updateComplain = async (
 
   try {
     const complain = await Complain.findById(id)
-    if (!complain) return next(createHttpError(404, 'Complain not found'))
+    if (!complain)
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Complain not found'),
+      )
 
     if (complain.userId.toString() !== req.user.id) {
-      return next(createHttpError(403, 'Only creator can edit their complain'))
+      return next(
+        createHttpError(
+          HttpStatusCodes.FORBIDDEN,
+          'Only creator can edit their complain',
+        ),
+      )
     }
 
     if (subject) complain.subject = subject
@@ -138,9 +178,16 @@ export const updateComplain = async (
     }
 
     await complain.save()
-    res.json({ message: 'Complain edited successfully' })
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ message: 'Complain edited successfully' })
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }
 
@@ -152,25 +199,41 @@ export const deleteComplain = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   const { id } = req.params
 
   try {
     const complain = await Complain.findById(id)
-    if (!complain) return next(createHttpError(404, 'Complain not found'))
+    if (!complain)
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Complain not found'),
+      )
 
     // Users can delete their own, Admins can delete any
     if (!isAdmin(req.user.role) && complain.userId.toString() !== req.user.id) {
       return next(
-        createHttpError(403, 'You can only delete your own complaints'),
+        createHttpError(
+          HttpStatusCodes.FORBIDDEN,
+          'You can only delete your own complaints',
+        ),
       )
     }
 
     await complain.deleteOne()
-    res.json({ message: 'Complain deleted successfully' })
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ message: 'Complain deleted successfully' })
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }
 
@@ -182,17 +245,26 @@ export const updateComplainStatus = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(401, 'Access denied'))
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
 
   const { id } = req.params
 
   try {
     const complain = await Complain.findById(id)
-    if (!complain) return next(createHttpError(404, 'Complain not found'))
+    if (!complain)
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Complain not found'),
+      )
 
     if (!isAdmin(req.user.role)) {
       return next(
-        createHttpError(403, 'You don’t have permission to change status'),
+        createHttpError(
+          HttpStatusCodes.FORBIDDEN,
+          'You don’t have permission to change status',
+        ),
       )
     }
 
@@ -235,7 +307,12 @@ export const updateComplainStatus = async (
         break
 
       default:
-        return next(createHttpError(400, 'Cannot update complain status'))
+        return next(
+          createHttpError(
+            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+            'Cannot update complain status',
+          ),
+        )
     }
 
     await complain.save()
@@ -243,8 +320,13 @@ export const updateComplainStatus = async (
     // sending email
     await sendEmail(complain.userId, emailSubject, emailBody)
 
-    res.json({ message: updatedMessage })
+    res.status(HttpStatusCodes.OK).json({ message: updatedMessage })
   } catch (error) {
-    next(createHttpError(500, 'Internal server error'))
+    next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Internal server error',
+      ),
+    )
   }
 }

@@ -6,23 +6,30 @@ import userModel from './userModel'
 import { generateToken } from '../utils/token'
 import { validateEmail, validatePassword } from '../utils/validation'
 import { AuthenticatedRequest } from '../middlewares/auth'
+import { HttpStatusCodes } from '../constants'
 
-// create new user
+/**
+ * Create/Register new user
+ */
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, password } = req.body
 
   if (!username || !email || !password) {
-    return next(createHttpError(400, 'All fields are required'))
+    return next(
+      createHttpError(HttpStatusCodes.BAD_REQUEST, 'All fields are required'),
+    )
   }
 
   if (!validateEmail(email)) {
-    return next(createHttpError(400, 'Invalid email format'))
+    return next(
+      createHttpError(HttpStatusCodes.BAD_REQUEST, 'Invalid email format'),
+    )
   }
 
   if (!validatePassword(password)) {
     return next(
       createHttpError(
-        400,
+        HttpStatusCodes.BAD_REQUEST,
         'Password must be 8-15 characters long, include at least one number and one special character',
       ),
     )
@@ -31,7 +38,12 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const existingUser = await userModel.findOne({ email })
     if (existingUser) {
-      return next(createHttpError(400, 'User already exists with this email'))
+      return next(
+        createHttpError(
+          HttpStatusCodes.BAD_REQUEST,
+          'User already exists with this email',
+        ),
+      )
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -41,39 +53,61 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       password: hashedPassword,
     })
 
-    res.status(201).json({ message: 'New User Created Successfully' })
+    res
+      .status(HttpStatusCodes.CREATED)
+      .json({ message: 'New User Created Successfully' })
   } catch (error) {
-    return next(createHttpError(500, 'Error while creating user'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while creating user',
+      ),
+    )
   }
 }
 
-// user login
+/**
+ * Login User
+ */
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body
 
   if (!email || !password) {
-    return next(createHttpError(400, 'All fields are required'))
+    return next(
+      createHttpError(HttpStatusCodes.BAD_REQUEST, 'All fields are required'),
+    )
   }
 
   try {
     const user = await userModel.findOne({ email })
     if (!user) {
-      return next(createHttpError(400, 'User does not exist'))
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'User does not exist'),
+      )
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password)
     if (!isPasswordMatch) {
-      return next(createHttpError(400, 'Incorrect password'))
+      return next(
+        createHttpError(HttpStatusCodes.BAD_REQUEST, 'Incorrect password'),
+      )
     }
 
     const token = generateToken(user._id)
-    res.status(200).json({ accessToken: token })
+    res.status(HttpStatusCodes.OK).json({ accessToken: token })
   } catch (error) {
-    return next(createHttpError(500, 'Error while signing JWT token'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while signing JWT token',
+      ),
+    )
   }
 }
 
-// get user profile
+/**
+ * Get User Profile
+ */
 const getProfile = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -81,18 +115,27 @@ const getProfile = async (
 ) => {
   try {
     if (!req.user)
-      return next(createHttpError(500, 'Error authenticating user'))
+      return next(
+        createHttpError(
+          HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          'Error authenticating user',
+        ),
+      )
 
-    // `req.user` will be set by `authMiddleware` after successful authentication
     const user = await userModel.findById(req.user.id).select('-password')
 
     if (!user) {
-      return next(createHttpError(404, 'User not found'))
+      return next(createHttpError(HttpStatusCodes.NOT_FOUND, 'User not found'))
     }
 
-    res.status(200).json({ user })
+    res.status(HttpStatusCodes.OK).json({ user })
   } catch (error) {
-    return next(createHttpError(500, 'Error while fetching user profile'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while fetching user profile',
+      ),
+    )
   }
 }
 

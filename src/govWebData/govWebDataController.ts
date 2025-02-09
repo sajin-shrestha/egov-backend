@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import createHttpError from 'http-errors'
 import govWebDataModel from './govWebDataModel'
 import { AuthenticatedRequest } from '../middlewares/auth'
+import { HttpStatusCodes } from '../constants'
+import { isAdmin } from '../utils/helper'
 
 // Get all government web data
 const getAllGovWebData = async (
@@ -11,9 +13,14 @@ const getAllGovWebData = async (
 ) => {
   try {
     const data = await govWebDataModel.find()
-    res.status(200).json({ data })
+    res.status(HttpStatusCodes.OK).json({ data })
   } catch (error) {
-    return next(createHttpError(500, 'Error while fetching government data'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while fetching government data',
+      ),
+    )
   }
 }
 
@@ -27,11 +34,18 @@ const getGovWebDataById = async (
   try {
     const data = await govWebDataModel.findById(id)
     if (!data) {
-      return next(createHttpError(404, 'Government data not found'))
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Government data not found'),
+      )
     }
-    res.status(200).json(data)
+    res.status(HttpStatusCodes.OK).json(data)
   } catch (error) {
-    return next(createHttpError(500, 'Error while fetching government data'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while fetching government data',
+      ),
+    )
   }
 }
 
@@ -41,15 +55,21 @@ const addGovWebData = async (
   res: Response,
   next: NextFunction,
 ) => {
-  if (!req.user) return next(createHttpError(500, 'Error authenticating user'))
+  if (!req.user)
+    return next(createHttpError(HttpStatusCodes.NOT_FOUND, 'User Not Found'))
 
-  if (req.user.role !== 'admin')
-    return next(createHttpError(401, 'Unauthorized'))
+  if (!isAdmin(req.user.role))
+    return next(createHttpError(HttpStatusCodes.UNAUTHORIZED, 'Unauthorized'))
 
   const { name, description, address, website_url, image_url } = req.body
 
   if (!name || !description || !address || !website_url) {
-    return next(createHttpError(400, 'Some required fields are missing'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.BAD_REQUEST,
+        'Some required fields are missing',
+      ),
+    )
   }
 
   try {
@@ -57,7 +77,7 @@ const addGovWebData = async (
     if (existingGovData) {
       return next(
         createHttpError(
-          400,
+          HttpStatusCodes.BAD_REQUEST,
           'Government data already exists with this website url',
         ),
       )
@@ -71,11 +91,16 @@ const addGovWebData = async (
       image_url: image_url || '',
     })
 
-    res.status(201).json({
+    res.status(HttpStatusCodes.CREATED).json({
       message: 'New government data added successfully',
     })
   } catch (error) {
-    return next(createHttpError(500, 'Error while adding government data'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while adding government data',
+      ),
+    )
   }
 }
 
@@ -92,7 +117,9 @@ const editGovWebData = async (
     const existingGovData = await govWebDataModel.findById(id)
 
     if (!existingGovData) {
-      return next(createHttpError(404, 'Government data not found'))
+      return next(
+        createHttpError(HttpStatusCodes.NOT_FOUND, 'Government data not found'),
+      )
     }
 
     if (name) existingGovData.name = name
@@ -103,11 +130,16 @@ const editGovWebData = async (
 
     await existingGovData.save()
 
-    res.status(200).json({
+    res.status(HttpStatusCodes.OK).json({
       message: 'Government data updated successfully',
     })
   } catch (error) {
-    return next(createHttpError(500, 'Error while editing government data'))
+    return next(
+      createHttpError(
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        'Error while editing government data',
+      ),
+    )
   }
 }
 
