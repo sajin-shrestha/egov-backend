@@ -4,6 +4,7 @@ import govWebDataModel from './govWebDataModel'
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { HttpStatusCodes } from '../constants'
 import { isAdmin } from '../utils/helper'
+import createFilter from '../utils/filter'
 
 // Get all government web data
 const getAllGovWebData = async (
@@ -12,12 +13,7 @@ const getAllGovWebData = async (
   next: NextFunction,
 ) => {
   try {
-    const filter = Object.fromEntries(
-      Object.entries(req.query).map(([key, value]) => [
-        key.toLowerCase(),
-        { $regex: String(value), $options: 'i' },
-      ]),
-    )
+    const filter = createFilter(req, ['name', 'description', 'address'])
 
     const data = await govWebDataModel.find(filter).sort({ createdAt: -1 }) // show latest data first
     res.status(HttpStatusCodes.OK).json({ data })
