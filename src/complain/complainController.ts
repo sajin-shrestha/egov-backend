@@ -7,6 +7,7 @@ import { Complain } from './complainModel'
 import { HttpStatusCodes, Status } from '../constants'
 import { isAdmin } from '../utils/helper'
 import { sendEmail } from '../services/emailService'
+import createFilter from '../utils/filter'
 
 /**
  * File a new complain
@@ -60,12 +61,12 @@ export const getComplains = async (
       createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
     )
 
-  const filter = Object.fromEntries(
-    Object.entries(req.query).map(([key, value]) => [
-      key.toLowerCase(),
-      { $regex: String(value), $options: 'i' },
-    ]),
-  )
+  const filter = createFilter(req, [
+    'subject',
+    'description',
+    'category',
+    'status',
+  ])
 
   try {
     const complains = isAdmin(req.user.role)
