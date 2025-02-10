@@ -7,16 +7,60 @@ import { isAdmin } from '../utils/helper'
 import createFilter from '../utils/filter'
 
 // Get all government web data
+// const getAllGovWebData = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const filter = createFilter(req, ['name', 'description', 'address'])
+
+//     const data = await govWebDataModel.find(filter).sort({ createdAt: -1 }) // show latest data first
+//     res.status(HttpStatusCodes.OK).json({ data })
+//   } catch (error) {
+//     return next(
+//       createHttpError(
+//         HttpStatusCodes.INTERNAL_SERVER_ERROR,
+//         'Error while fetching government data',
+//       ),
+//     )
+//   }
+// }
 const getAllGovWebData = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
+    // Get page number and limit from query parameters, default to page 1 and limit 10 if not provided
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 10
+    const skip = (page - 1) * limit
+
+    // Create filter for search criteria
     const filter = createFilter(req, ['name', 'description', 'address'])
 
-    const data = await govWebDataModel.find(filter).sort({ createdAt: -1 }) // show latest data first
-    res.status(HttpStatusCodes.OK).json({ data })
+    // Get total count of matching records
+    const total = await govWebDataModel.countDocuments(filter)
+
+    // Get paginated data
+    const data = await govWebDataModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // show latest data first
+
+    // Calculate pagination fields
+    const next = page * limit < total ? page + 1 : null
+    const prev = page > 1 ? page - 1 : null
+
+    // Respond with data and pagination details
+    res.status(HttpStatusCodes.OK).json({
+      total,
+      next,
+      prev,
+      data,
+    })
   } catch (error) {
     return next(
       createHttpError(
