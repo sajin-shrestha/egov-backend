@@ -5,34 +5,55 @@ import { AuthenticatedRequest } from '../middlewares/auth'
 import { HttpStatusCodes } from '../constants'
 import { isAdmin } from '../utils/helper'
 import createFilter from '../utils/filter'
-import { pagination } from '../utils/pagination'
+// import { pagination } from '../utils/pagination'
 
+// const getAllGovWebData = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     // Get page number and limit from query parameters, default to page 1 and limit 10 if not provided
+//     const page = parseInt(req.query.page as string) || 1
+//     const limit = parseInt(req.query.limit as string) || 10
+
+//     const filter = createFilter(req, ['name', 'description', 'address'])
+
+//     const { total_count, next_page_number, prev_page_number, data } =
+//       await pagination(
+//         govWebDataModel, // Model to be paginated
+//         filter, // Filter to apply
+//         page, // Page number
+//         limit, // Limit per page
+//       )
+
+//     res.status(HttpStatusCodes.OK).json({
+//       total_count,
+//       next_page_number,
+//       prev_page_number,
+//       data,
+//     })
+//   } catch (error) {
+//     return next(
+//       createHttpError(
+//         HttpStatusCodes.INTERNAL_SERVER_ERROR,
+//         'Error while fetching government data',
+//       ),
+//     )
+//   }
+// }
+
+// Get all government web data
 const getAllGovWebData = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    // Get page number and limit from query parameters, default to page 1 and limit 10 if not provided
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 10
-
     const filter = createFilter(req, ['name', 'description', 'address'])
 
-    const { total_count, next_page_number, prev_page_number, data } =
-      await pagination(
-        govWebDataModel, // Model to be paginated
-        filter, // Filter to apply
-        page, // Page number
-        limit, // Limit per page
-      )
-
-    res.status(HttpStatusCodes.OK).json({
-      total_count,
-      next_page_number,
-      prev_page_number,
-      data,
-    })
+    const data = await govWebDataModel.find(filter).sort({ createdAt: -1 }) // show latest data first
+    res.status(HttpStatusCodes.OK).json({ data })
   } catch (error) {
     return next(
       createHttpError(
