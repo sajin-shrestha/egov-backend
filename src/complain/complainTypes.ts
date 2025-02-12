@@ -1,6 +1,6 @@
-import { Document as MongooseDocument } from 'mongoose'
+import { Document } from 'mongoose'
 
-export interface IComplain extends MongooseDocument {
+export interface IComplain extends Document {
   userId: string
   subject: string
   description: string

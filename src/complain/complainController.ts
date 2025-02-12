@@ -70,9 +70,11 @@ export const getComplains = async (
 
   try {
     const complains = isAdmin(req.user.role)
-      ? await Complain.find(filter).select('-userId').sort({ createdAt: -1 }) // show latest data first
+      ? await Complain.find(filter)
+          .populate({ path: 'userId', select: '-password' })
+          .sort({ createdAt: -1 })
       : await Complain.find({ userId: req.user.id, ...filter })
-          .select('-userId')
+          .populate({ path: 'userId', select: '-password' })
           .sort({ createdAt: -1 })
 
     res.status(HttpStatusCodes.OK).json({ complains })
