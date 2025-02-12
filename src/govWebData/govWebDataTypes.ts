@@ -1,4 +1,6 @@
-export interface IGovWebData {
+import { Document } from 'mongoose'
+
+export interface IGovWebData extends Document {
   _id: string
   name: string
   description: string

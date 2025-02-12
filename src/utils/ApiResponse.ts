@@ -73,7 +73,7 @@ class ErrorApiResponse {
    *
    * @param statusCode - HTTP status code for the error (e.g., 400 for bad request).
    * @param message - Error message (e.g., 'Validation failed').
-   * @param errorStack - Optional error stack that can be included in the response (e.g., 'Field "name" is required').
+   * @param errorStack - Optional error stack that can be included in the response.
    *
    * @returns A new `ErrorApiResponse` instance with the given values.
    */
