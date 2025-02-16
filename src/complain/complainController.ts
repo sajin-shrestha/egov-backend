@@ -104,7 +104,7 @@ export const getComplainById = async (
   const { id } = req.params
 
   try {
-    const complain = await Complain.findById(id).select('-userId')
+    const complain = await Complain.findById(id)
 
     if (!complain) {
       return next(
