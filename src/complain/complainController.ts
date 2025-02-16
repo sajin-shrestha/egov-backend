@@ -147,7 +147,7 @@ export const updateComplain = async (
     )
 
   const { id } = req.params
-  const { subject, description, category, status } = req.body
+  const { subject, description, category } = req.body
   const newImage = req.file
 
   try {
@@ -169,10 +169,6 @@ export const updateComplain = async (
     if (subject) complain.subject = subject
     if (description) complain.description = description
     if (category) complain.category = category
-
-    if (isAdmin(req.user.role) && status) {
-      complain.status = status
-    }
 
     if (newImage) {
       if (complain.image) {

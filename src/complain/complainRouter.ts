@@ -176,10 +176,6 @@ complainRouter.get('/complain/:id', authMiddleware, getComplainById)
  *               image:
  *                 type: file
  *                 example: 'file'
- *               status:
- *                 type: string
- *                 example: 'string'
- *                 description: New status of the complain (Only Admins can change status)
  *     security:
  *       - BearerAuth: []
  *     responses:
