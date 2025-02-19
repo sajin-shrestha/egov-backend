@@ -5,14 +5,34 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import path from 'path'
 import morgan from 'morgan'
+import rateLimit from 'express-rate-limit'
 
 import globalErrorHandler from './middlewares/globalErrorHandler'
 import userRouter from './user/userRouter'
 import govWebDataRouter from './govWebData/govWebDataRouter'
 import logger from './config/logger'
 import complainRouter from './complain/complainRouter'
+import createHttpError from 'http-errors'
+import { HttpStatusCodes } from './constants'
 
 const app = express()
+
+const apiLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 50,
+  legacyHeaders: true,
+  standardHeaders: true,
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        HttpStatusCodes.TO_MANY_REQUESTS,
+        'Too many requests, please try again later.',
+      ),
+    )
+  },
+})
+
+app.use(apiLimiter)
 
 app.use(
   morgan('tiny', {

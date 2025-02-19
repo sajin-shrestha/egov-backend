@@ -1,8 +1,26 @@
 import express from 'express'
+import rateLimit from 'express-rate-limit'
+import createHttpError from 'http-errors'
 import { createUser, getProfile, loginUser } from './userController'
 import authMiddleware from '../middlewares/auth'
+import { HttpStatusCodes } from '../constants'
 
 const userRouter = express.Router()
+
+const loginLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next) => {
+    next(
+      createHttpError(
+        HttpStatusCodes.TO_MANY_REQUESTS,
+        'Too many login attempts. Try again in 5 minutes.',
+      ),
+    )
+  },
+})
 
 /**
  * @swagger
@@ -76,7 +94,7 @@ userRouter.post('/register', createUser)
  *                 accessToken:
  *                   type: string
  */
-userRouter.post('/login', loginUser)
+userRouter.post('/login', loginLimiter, loginUser)
 
 /**
  * @swagger
