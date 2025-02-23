@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   addGovWebData,
+  deleteGovDataById,
   editGovWebData,
   getAllGovWebData,
   getGovWebDataById,
@@ -179,5 +180,34 @@ govWebDataRouter.post('/gov-web-data', authMiddleware, addGovWebData)
  *                   example: 'Government data updated successfully'
  */
 govWebDataRouter.patch('/gov-web-data/:id', authMiddleware, editGovWebData)
+
+/**
+ * @swagger
+ * /api/govt/gov-web-data/{id}:
+ *   delete:
+ *     tags:
+ *       - Government Data
+ *     description: Delete a Government website data (Admins only)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the gov-web-data to delete
+ *         schema:
+ *           type: string
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the government data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+govWebDataRouter.delete('/gov-web-data/:id', authMiddleware, deleteGovDataById)
 
 export default govWebDataRouter

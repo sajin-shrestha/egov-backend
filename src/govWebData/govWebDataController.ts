@@ -183,4 +183,49 @@ const editGovWebData = async (
   }
 }
 
-export { addGovWebData, editGovWebData, getAllGovWebData, getGovWebDataById }
+const deleteGovDataById = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (!req.user)
+    return next(
+      createHttpError(HttpStatusCodes.NOT_FOUND, 'User not logged-in'),
+    )
+  const { id } = req.params
+
+  try {
+    const existingGovData = await govWebDataModel.findById(id)
+    if (!existingGovData) {
+      return next(
+        createHttpError(
+          HttpStatusCodes.NOT_FOUND,
+          'The government data with this id doesnot exist',
+        ),
+      )
+    }
+
+    // only-admin access
+    if (!isAdmin(req.user.role)) {
+      return next(
+        createHttpError(
+          HttpStatusCodes.FORBIDDEN,
+          'You can only delete your own complaints',
+        ),
+      )
+    }
+
+    await existingGovData.deleteOne()
+    res
+      .status(HttpStatusCodes.OK)
+      .json({ message: 'Government website deleted successfully' })
+  } catch (error) {}
+}
+
+export {
+  addGovWebData,
+  editGovWebData,
+  getAllGovWebData,
+  getGovWebDataById,
+  deleteGovDataById,
+}
