@@ -87,7 +87,9 @@ app.use(
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'welcome to egovernance - backend' })
+  res.json({
+    message: 'Swagger docs available in: https://egov-backend.vercel.app/docs/',
+  })
 })
 app.use('/api/file/', complainRouter)
 app.use('/api/users', userRouter)
